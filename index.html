@@ -49,8 +49,8 @@ tbody tr.dragging-row{opacity:.4}
 td{padding:7px 6px;font-size:13px;white-space:nowrap;vertical-align:middle;text-align:center;height:38px}
 td.title-cell{font-weight:500;min-width:140px;cursor:pointer;text-align:left;padding-left:10px}
 td.title-cell:hover{color:var(--blue)}
-td.grip-cell{width:24px;cursor:grab;color:var(--text3);text-align:center;font-size:11px;user-select:none}
-td.grip-cell:active{cursor:grabbing}
+tbody tr{cursor:grab}
+tbody tr:active{cursor:grabbing}
 td.author-cell{color:var(--text2);min-width:70px;text-align:left}
 td.date-cell{text-align:center;min-width:90px;cursor:pointer;position:relative}
 td.date-cell .dot{width:14px;height:14px;border-radius:50%;border:1.5px solid var(--border);display:inline-block}
@@ -153,7 +153,7 @@ td.act-cell button:hover{color:var(--red)}
 <!-- Settings -->
 <div class="sp-ov" id="spOv" onclick="closeSP()"></div>
 <div class="sp" id="spPanel">
-  <div class="sp-hdr"><h2>설정</h2><button class="btn btn-g btn-s" onclick="closeSP()">×</button></div>
+  <div class="sp-hdr"><h2>설정</h2><button class="btn btn-g btn-s" onclick="closeSP()">✕</button></div>
   <div class="sp-body">
     <div class="sp-sec">
       <h3>편집자 관리</h3>
@@ -192,13 +192,13 @@ const DEFAULT_DATA=[
 {title:'미역의 효능',author:'임은비',stages:{contract_done:'25/4/13',final:'26/2/15'}},
 {title:'한국사 이상현상',author:'최인서',stages:{contract_done:'25/12/17',final:'26/3/1'}},
 {title:'기화',author:'소서림',stages:{contract_done:'25/4/10',final:'26/3/15'}},
-{title:'연화의 뜻',author:'고혜원',stages:{contract_done:'25/5/20',final:'26/3/30'}},
-{title:'요의 세계사 2',author:'임소미',stages:{draft:'25/12/29'}},
+{title:'연화의 문',author:'고혜원',stages:{contract_done:'25/5/20',final:'26/3/30'}},
+{title:'요즘 세계사 2',author:'임소미',stages:{draft:'25/12/29'}},
 {title:'이경 이야기',author:'박에스더',stages:{contract_done:'25/8/18',draft:'26/3/12'}},
 {title:'조용한 사람',author:'이재은',stages:{draft:'26/4/14'}},
-{title:'요의 어린 AI',author:'권서림',stages:{proposal:'26/2/25',sample:'26/3/15',contract_review:'26/3/16',draft:'26/4/16'}},
+{title:'요즘 어른 AI',author:'권서림',stages:{proposal:'26/2/25',sample:'26/3/15',contract_review:'26/3/16',draft:'26/4/16'}},
 {title:'여름 일본 광고',author:'이시은',stages:{proposal:'26/2/10',sample:'26/3/30',draft:'26/5/15'}},
-{title:'과학 괴담회',author:'이광녕',stages:{sample:'26/2/2',draft:'26/6/23'}},
+{title:'과학 괴담회',author:'이광렬',stages:{sample:'26/2/2',draft:'26/6/23'}},
 {title:'단백 공복',author:'장일영',stages:{sample:'26/3/12',contract_review:'26/3/15',contract_done:'26/3/15',draft:'26/6/29'}},
 {title:'아이돌 바디호러',author:'설재인',stages:{contract_done:'25/7/16',draft:'26/6/29'}},
 {title:'천년교습소',author:'배명은',stages:{contract_done:'25/4/20',draft:'26/7/29'}},
@@ -206,7 +206,7 @@ const DEFAULT_DATA=[
 {title:'사랑 허락 말 것',author:'김달',stages:{contract_done:'24/1/9'}},
 {title:'별별역사 전쟁사',author:'김도형',stages:{contract_done:'26/2/25'}},
 {title:'10대 첫 세계미술관',author:'김영숙',stages:{proposal:'25/12/29',sample:'26/3/31'}},
-{title:'이상한 맞춤법',author:'이주윤',stages:{contract_done:'25/11/30'}},
+{title:'이상한 맞춤범',author:'이주윤',stages:{contract_done:'25/11/30'}},
 {title:'클로드 실용서',author:'권서림',stages:{idea:'26/3/16'}}
 ];
 
@@ -270,14 +270,13 @@ function render(){
   const q=document.getElementById('sBox').value.toLowerCase();
   const th=document.getElementById('thead');
   const isA=S.role==='admin';
-  th.innerHTML=(isA?'<th style="width:24px"></th>':'')+'<th>기획(가제)</th><th>저자</th>'+STAGES.map(s=>`<th>${s}</th>`).join('')+(isA?'<th></th>':'');
+  th.innerHTML='<th>기획(가제)</th><th>저자</th>'+STAGES.map(s=>`<th>${s}</th>`).join('')+(isA?'<th></th>':'');
   const tb=document.getElementById('tbody');
   let rows=sortProjects(S.projects);
   if(q)rows=rows.filter(p=>p.title.toLowerCase().includes(q)||p.author.toLowerCase().includes(q));
   tb.innerHTML=rows.map(p=>{
     const stg=p.stages||{};
     return `<tr draggable="${isA}" data-id="${p.id}" ondragstart="rowDS(event)" ondragover="rowDO(event)" ondragleave="rowDL(event)" ondrop="rowDR(event)" ondragend="rowDE(event)">
-      ${isA?`<td class="grip-cell">☰</td>`:''}
       <td class="title-cell" onclick="openEdit('${p.id}')">${esc(p.title)}</td>
       <td class="author-cell">${esc(p.author)}</td>
       ${ST_KEYS.map(k=>{
@@ -420,8 +419,7 @@ init();
 </script>
 </body>
 </html>
-="검색" oninput="render()">
-    <button class="btn btn-p btn-s" id="addBtn" onclick="openAdd()">+ 새 기획</button>
+dd()">+ 새 기획</button>
     <button class="btn btn-g btn-s" onclick="exportJSON()">내보내기</button>
     <button class="btn btn-g btn-s" onclick="document.getElementById('impF').click()">가져오기</button>
     <input type="file" id="impF" accept=".json" style="display:none" onchange="importJSON(event)">
@@ -452,7 +450,7 @@ init();
 <!-- Settings -->
 <div class="sp-ov" id="spOv" onclick="closeSP()"></div>
 <div class="sp" id="spPanel">
-  <div class="sp-hdr"><h2>설정</h2><button class="btn btn-g btn-s" onclick="closeSP()">×</button></div>
+  <div class="sp-hdr"><h2>설정</h2><button class="btn btn-g btn-s" onclick="closeSP()">✕</button></div>
   <div class="sp-body">
     <div class="sp-sec">
       <h3>편집자 관리</h3>
@@ -491,13 +489,13 @@ const DEFAULT_DATA=[
 {title:'미역의 효능',author:'임은비',stages:{contract_done:'25/4/13',final:'26/2/15'}},
 {title:'한국사 이상현상',author:'최인서',stages:{contract_done:'25/12/17',final:'26/3/1'}},
 {title:'기화',author:'소서림',stages:{contract_done:'25/4/10',final:'26/3/15'}},
-{title:'연화의 뜻',author:'고혜원',stages:{contract_done:'25/5/20',final:'26/3/30'}},
-{title:'요의 세계사 2',author:'임소미',stages:{draft:'25/12/29'}},
+{title:'연화의 문',author:'고혜원',stages:{contract_done:'25/5/20',final:'26/3/30'}},
+{title:'요즘 세계사 2',author:'임소미',stages:{draft:'25/12/29'}},
 {title:'이경 이야기',author:'박에스더',stages:{contract_done:'25/8/18',draft:'26/3/12'}},
 {title:'조용한 사람',author:'이재은',stages:{draft:'26/4/14'}},
-{title:'요의 어린 AI',author:'권서림',stages:{proposal:'26/2/25',sample:'26/3/15',contract_review:'26/3/16',draft:'26/4/16'}},
+{title:'요삘 어른 AI',author:'권서림',stages:{proposal:'26/2/25',sample:'26/3/15',contract_review:'26/3/16',draft:'26/4/16'}},
 {title:'여름 일본 광고',author:'이시은',stages:{proposal:'26/2/10',sample:'26/3/30',draft:'26/5/15'}},
-{title:'과학 괴담회',author:'이광녕',stages:{sample:'26/2/2',draft:'26/6/23'}},
+{title:'과학 괴담회',author:'이광렬',stages:{sample:'26/2/2',draft:'26/6/23'}},
 {title:'단백 공복',author:'장일영',stages:{sample:'26/3/12',contract_review:'26/3/15',contract_done:'26/3/15',draft:'26/6/29'}},
 {title:'아이돌 바디호러',author:'설재인',stages:{contract_done:'25/7/16',draft:'26/6/29'}},
 {title:'천년교습소',author:'배명은',stages:{contract_done:'25/4/20',draft:'26/7/29'}},
@@ -505,7 +503,7 @@ const DEFAULT_DATA=[
 {title:'사랑 허락 말 것',author:'김달',stages:{contract_done:'24/1/9'}},
 {title:'별별역사 전쟁사',author:'김도형',stages:{contract_done:'26/2/25'}},
 {title:'10대 첫 세계미술관',author:'김영숙',stages:{proposal:'25/12/29',sample:'26/3/31'}},
-{title:'이상한 맞춤법',author:'이주윤',stages:{contract_done:'25/11/30'}},
+{title:'이상한 맞춤범',author:'이주윤',stages:{contract_done:'25/11/30'}},
 {title:'클로드 실용서',author:'권서림',stages:{idea:'26/3/16'}}
 ];
 
@@ -569,14 +567,13 @@ function render(){
   const q=document.getElementById('sBox').value.toLowerCase();
   const th=document.getElementById('thead');
   const isA=S.role==='admin';
-  th.innerHTML=(isA?'<th style="width:24px"></th>':'')+'<th>기획(가제)</th><th>저자</th>'+STAGES.map(s=>`<th>${s}</th>`).join('')+(isA?'<th></th>':'');
+  th.innerHTML='<th>기획(가제)</th><th>저자</th>'+STAGES.map(s=>`<th>${s}</th>`).join('')+(isA?'<th></th>':'');
   const tb=document.getElementById('tbody');
   let rows=sortProjects(S.projects);
   if(q)rows=rows.filter(p=>p.title.toLowerCase().includes(q)||p.author.toLowerCase().includes(q));
   tb.innerHTML=rows.map(p=>{
     const stg=p.stages||{};
     return `<tr draggable="${isA}" data-id="${p.id}" ondragstart="rowDS(event)" ondragover="rowDO(event)" ondragleave="rowDL(event)" ondrop="rowDR(event)" ondragend="rowDE(event)">
-      ${isA?`<td class="grip-cell">☰</td>`:''}
       <td class="title-cell" onclick="openEdit('${p.id}')">${esc(p.title)}</td>
       <td class="author-cell">${esc(p.author)}</td>
       ${ST_KEYS.map(k=>{
@@ -705,21 +702,6 @@ async function syncGS(){if(!S.gsUrl){document.getElementById('gsMsg').className=
 
 function exportJSON(){const b=new Blob([JSON.stringify({projects:S.projects,editors:S.editors},null,2)],{type:'application/json'});const a=document.createElement('a');a.href=URL.createObjectURL(b);a.download='기획현황.json';a.click()}
 function importJSON(e){const f=e.target.files[0];if(!f)return;const r=new FileReader();r.onload=ev=>{try{const d=JSON.parse(ev.target.result);if(d.projects)S.projects=d.projects;if(d.editors)S.editors=d.editors;save();render();alert('완료')}catch(err){alert('오류')}};r.readAsText(f);e.target.value=''}
-
-function esc(s){const d=document.createElement('div');d.textContent=s;return d.innerHTML}
-
-function init(){
-  load();
-  const r=sessionStorage.getItem('role');
-  if(r==='admin'&&localStorage.getItem('admin_pw_hash')){S.role='admin';showApp()}
-  else if(r==='editor'){S.edName=sessionStorage.getItem('edName');if(S.edName&&S.editors.includes(S.edName)){S.role='editor';showApp()}}
-  popEdSel();
-}
-init();
-</script>
-</body>
-</html>
-nload=ev=>{try{const d=JSON.parse(ev.target.result);if(d.projects)S.projects=d.projects;if(d.editors)S.editors=d.editors;save();render();alert('완료')}catch(err){alert('오류')}};r.readAsText(f);e.target.value=''}
 
 function esc(s){const d=document.createElement('div');d.textContent=s;return d.innerHTML}
 
