@@ -123,6 +123,7 @@ td.act-cell button:hover{color:var(--red)}
   <div class="toolbar">
     <input class="sbox" id="sBox" placeholder="검색" oninput="render()">
     <button class="btn btn-p btn-s" id="addBtn" onclick="openAdd()">+ 새 기획</button>
+    <button class="btn btn-g btn-s" onclick="loadFromSheet()" id="syncLoadBtn" title="Google Sheets에서 최신 데이터 불러오기">시트 동기화</button>
     <button class="btn btn-g btn-s" onclick="exportJSON()">내보내기</button>
     <button class="btn btn-g btn-s" onclick="document.getElementById('impF').click()">가져오기</button>
     <input type="file" id="impF" accept=".json" style="display:none" onchange="importJSON(event)">
@@ -228,6 +229,7 @@ function showApp(){
   document.getElementById('setBtn').style.display=a?'':'none';
   document.getElementById('addBtn').style.display=a?'':'none';
   render();
+  autoSyncFromSheet();
 }
 
 function load(){
@@ -402,6 +404,40 @@ async function chPw(){
 
 function saveGS(){S.gsUrl=document.getElementById('gsUrl').value.trim();localStorage.setItem('gsUrl',S.gsUrl);const m=document.getElementById('gsMsg');m.className='msg success';m.textContent='저장됨'}
 async function syncGS(){if(!S.gsUrl){document.getElementById('gsMsg').className='msg error';document.getElementById('gsMsg').textContent='URL 필요';return}try{await fetch(S.gsUrl,{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({action:'syncAll',projects:S.projects,editors:S.editors}),mode:'no-cors'});document.getElementById('gsMsg').className='msg success';document.getElementById('gsMsg').textContent='완료'}catch(e){document.getElementById('gsMsg').className='msg error';document.getElementById('gsMsg').textContent='실패'}}
+
+// Load from Google Sheets (pull)
+async function loadFromSheet(){
+  if(!S.gsUrl){alert('설정에서 Apps Script URL을 먼저 입력하세요.');return}
+  const btn=document.getElementById('syncLoadBtn');
+  const origText=btn.textContent;
+  btn.textContent='불러오는 중...';btn.disabled=true;
+  try{
+    const res=await fetch(S.gsUrl+'?action=getAll');
+    const data=await res.json();
+    if(data.projects&&data.projects.length>0){
+      S.projects=data.projects;
+      save();render();
+      btn.textContent='완료!';setTimeout(()=>{btn.textContent=origText;btn.disabled=false},1500);
+    }else{
+      btn.textContent='시트 데이터 없음';setTimeout(()=>{btn.textContent=origText;btn.disabled=false},1500);
+    }
+  }catch(e){
+    btn.textContent='실패';setTimeout(()=>{btn.textContent=origText;btn.disabled=false},1500);
+    console.error('Sheet load error:',e);
+  }
+}
+
+// Auto-load from sheet on app start if URL is configured
+async function autoSyncFromSheet(){
+  if(!S.gsUrl)return;
+  try{
+    const res=await fetch(S.gsUrl+'?action=getAll');
+    const data=await res.json();
+    if(data.projects&&data.projects.length>0){
+      S.projects=data.projects;save();render();
+    }
+  }catch(e){console.log('Auto-sync failed, using local data')}
+}
 
 function exportJSON(){const b=new Blob([JSON.stringify({projects:S.projects,editors:S.editors},null,2)],{type:'application/json'});const a=document.createElement('a');a.href=URL.createObjectURL(b);a.download='기획현황.json';a.click()}
 function importJSON(e){const f=e.target.files[0];if(!f)return;const r=new FileReader();r.onload=ev=>{try{const d=JSON.parse(ev.target.result);if(d.projects)S.projects=d.projects;if(d.editors)S.editors=d.editors;save();render();alert('완료')}catch(err){alert('오류')}};r.readAsText(f);e.target.value=''}
