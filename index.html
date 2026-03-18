@@ -5,589 +5,367 @@
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>기획 진행 현황</title>
 <style>
-  * { margin:0; padding:0; box-sizing:border-box; }
-  body { font-family: 'Apple SD Gothic Neo','Malgun Gothic',sans-serif; background:#f5f5f5; color:#333; font-size:14px; }
+:root{--bg:#fff;--bg2:#f7f7f5;--surface:#fff;--surface2:#f1f1ef;--border:#e8e8e5;--text:#37352f;--text2:#787774;--text3:#9b9a97;--blue:#2383e2;--blue-light:#e8f0fe;--green:#0f7b6c;--green-bg:#dbeddb;--red:#e03e3e;--red-bg:#fbe4e4;--radius:4px}
+*{margin:0;padding:0;box-sizing:border-box}
+body{font-family:-apple-system,BlinkMacSystemFont,'Segoe UI','Noto Sans KR',sans-serif;background:var(--bg);color:var(--text);font-size:14px}
+.login-overlay{position:fixed;inset:0;background:var(--bg2);display:flex;align-items:center;justify-content:center;z-index:9999}
+.login-card{background:var(--surface);border:1px solid var(--border);border-radius:12px;padding:48px;width:100%;max-width:380px;box-shadow:0 2px 8px rgba(0,0,0,.06)}
+.login-card h1{font-size:22px;margin-bottom:4px;font-weight:700}
+.login-card .sub{color:var(--text2);font-size:14px;margin-bottom:28px}
+.login-tabs{display:flex;margin-bottom:24px;border-bottom:1px solid var(--border)}
+.login-tab{flex:1;padding:10px;text-align:center;font-size:14px;font-weight:500;cursor:pointer;border:none;border-bottom:2px solid transparent;color:var(--text3);background:none}
+.login-tab.active{color:var(--text);border-bottom-color:var(--text)}
+.fg{margin-bottom:14px}
+.fg label{display:block;font-size:12px;font-weight:500;color:var(--text2);margin-bottom:5px}
+.fg input,.fg select,.fg textarea{width:100%;padding:8px 10px;border:1px solid var(--border);border-radius:var(--radius);font-size:14px;outline:none;color:var(--text)}
+.fg input:focus,.fg select:focus{border-color:var(--blue);box-shadow:0 0 0 2px rgba(35,131,226,.12)}
+.btn{padding:8px 16px;border:none;border-radius:var(--radius);font-size:14px;font-weight:500;cursor:pointer;display:inline-flex;align-items:center;gap:6px}
+.btn-p{background:var(--blue);color:#fff}.btn-p:hover{background:#1b6ec2}
+.btn-f{width:100%;justify-content:center}
+.btn-s{padding:5px 10px;font-size:13px}
+.btn-g{background:transparent;color:var(--text2);border:1px solid var(--border)}.btn-g:hover{background:var(--surface2)}
+.msg{margin-top:10px;padding:8px 10px;border-radius:var(--radius);font-size:13px;display:none}
+.msg.error{display:block;background:var(--red-bg);color:var(--red)}
+.msg.success{display:block;background:var(--green-bg);color:var(--green)}
 
-  /* ─── Login ─── */
-  .login-overlay { position:fixed; inset:0; background:rgba(0,0,0,.45); display:flex; align-items:center; justify-content:center; z-index:9999; }
-  .login-box { background:#fff; border-radius:12px; padding:40px 36px; width:360px; text-align:center; box-shadow:0 8px 32px rgba(0,0,0,.15); }
-  .login-box h2 { margin-bottom:8px; font-size:20px; }
-  .login-box p { color:#888; font-size:13px; margin-bottom:24px; }
-  .login-box input { width:100%; padding:12px 14px; border:1px solid #ddd; border-radius:8px; font-size:14px; margin-bottom:12px; outline:none; }
-  .login-box input:focus { border-color:#4a7c59; }
-  .login-box button { width:100%; padding:12px; background:#4a7c59; color:#fff; border:none; border-radius:8px; font-size:15px; cursor:pointer; font-weight:600; }
-  .login-box button:hover { background:#3d6b4b; }
-  .login-error { color:#e74c3c; font-size:12px; margin-bottom:8px; }
+/* Header */
+.hdr{padding:20px 32px 0;display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap;gap:12px}
+.hdr h1{font-size:20px;font-weight:700}
+.hdr-r{display:flex;align-items:center;gap:8px}
+.ubadge{background:var(--blue-light);color:var(--blue);padding:3px 10px;border-radius:10px;font-size:12px;font-weight:500}
+.toolbar{padding:16px 32px;display:flex;align-items:center;gap:10px;flex-wrap:wrap}
+.sbox{background:var(--bg2);border:1px solid var(--border);border-radius:var(--radius);padding:6px 10px;font-size:13px;width:200px;outline:none;color:var(--text)}
+.sbox:focus{border-color:var(--blue)}
 
-  /* ─── Header ─── */
-  .header { background:#fff; border-bottom:1px solid #e0e0e0; padding:16px 32px; display:flex; align-items:center; justify-content:space-between; }
-  .header h1 { font-size:18px; font-weight:700; }
-  .header-right { display:flex; align-items:center; gap:12px; }
-  .header-right .role-badge { padding:4px 10px; border-radius:12px; font-size:11px; font-weight:600; }
-  .role-badge.admin { background:#e8f5e9; color:#2e7d32; }
-  .role-badge.editor { background:#e3f2fd; color:#1565c0; }
-  .btn-sm { padding:6px 14px; border:1px solid #ddd; border-radius:6px; background:#fff; font-size:12px; cursor:pointer; }
-  .btn-sm:hover { background:#f5f5f5; }
-  .btn-primary { background:#4a7c59; color:#fff; border:none; }
-  .btn-primary:hover { background:#3d6b4b; }
-  .btn-danger { color:#e74c3c; border-color:#e74c3c; }
-  .btn-danger:hover { background:#fdecea; }
+/* Table */
+.tbl-wrap{padding:0 32px 32px;overflow-x:auto}
+table{width:100%;border-collapse:collapse;min-width:1100px}
+thead th{text-align:left;font-size:12px;font-weight:600;color:var(--text2);padding:8px 10px;border-bottom:2px solid var(--border);white-space:nowrap;position:sticky;top:0;background:var(--bg);z-index:2}
+tbody tr{border-bottom:1px solid var(--border);transition:background .1s}
+tbody tr:hover{background:var(--bg2)}
+td{padding:7px 10px;font-size:13px;white-space:nowrap;vertical-align:middle}
+td.title-cell{font-weight:500;min-width:140px;cursor:pointer}
+td.title-cell:hover{color:var(--blue)}
+td.author-cell{color:var(--text2);min-width:70px}
+td.date-cell{text-align:center;min-width:90px;cursor:pointer;position:relative}
+td.date-cell .dot{width:14px;height:14px;border-radius:50%;border:1.5px solid var(--border);display:inline-block;vertical-align:middle}
+td.date-cell .dt{background:var(--green-bg);color:var(--green);padding:2px 8px;border-radius:3px;font-size:12px;font-weight:500}
+td.act-cell{text-align:center;width:30px}
+td.act-cell button{background:none;border:none;color:var(--text3);cursor:pointer;font-size:15px}
+td.act-cell button:hover{color:var(--red)}
 
-  /* ─── Main ─── */
-  .main { max-width:1200px; margin:24px auto; padding:0 24px; }
+/* Modal */
+.modal-bg{position:fixed;inset:0;background:rgba(0,0,0,.25);display:none;align-items:center;justify-content:center;z-index:1000}
+.modal-bg.show{display:flex}
+.modal{background:var(--surface);border-radius:10px;padding:28px;width:100%;max-width:440px;box-shadow:0 8px 30px rgba(0,0,0,.12);max-height:90vh;overflow-y:auto}
+.modal h2{font-size:17px;margin-bottom:18px;font-weight:600}
+.modal-foot{display:flex;justify-content:flex-end;gap:8px;margin-top:20px}
 
-  /* ─── Pipeline ─── */
-  .pipeline { background:#fff; border:1px solid #e0e0e0; border-radius:8px; padding:20px 24px; margin-bottom:20px; }
-  .pipeline h3 { font-size:14px; font-weight:700; margin-bottom:14px; }
-  .pipeline-grid { display:grid; grid-template-columns:repeat(9,1fr); gap:8px; }
-  .pipe-item { text-align:center; padding:12px 4px; border:1px solid #e0e0e0; border-radius:6px; }
-  .pipe-item .count { font-size:22px; font-weight:700; color:#4a7c59; }
-  .pipe-item .label { font-size:10px; color:#888; margin-top:4px; }
+/* Settings */
+.sp{position:fixed;top:0;right:-400px;width:400px;height:100vh;background:var(--surface);border-left:1px solid var(--border);z-index:500;transition:right .25s;display:flex;flex-direction:column}
+.sp.open{right:0}
+.sp-hdr{padding:14px 18px;border-bottom:1px solid var(--border);display:flex;align-items:center;justify-content:space-between}
+.sp-hdr h2{font-size:15px;font-weight:600}
+.sp-body{flex:1;overflow-y:auto;padding:18px}
+.sp-sec{margin-bottom:24px}
+.sp-sec h3{font-size:11px;font-weight:600;color:var(--text3);margin-bottom:8px;text-transform:uppercase;letter-spacing:.5px}
+.ed-item{display:flex;align-items:center;justify-content:space-between;padding:5px 8px;background:var(--bg2);border-radius:var(--radius);margin-bottom:3px;font-size:13px}
+.ed-item button{background:none;border:none;color:var(--red);cursor:pointer;font-size:14px}
+.sp-ov{position:fixed;inset:0;background:rgba(0,0,0,.12);z-index:499;display:none}
+.sp-ov.show{display:block}
 
-  /* ─── Table ─── */
-  .table-section { background:#fff; border:1px solid #e0e0e0; border-radius:8px; padding:20px 24px; }
-  .table-header { display:flex; align-items:center; justify-content:space-between; margin-bottom:16px; }
-  .table-header h3 { font-size:14px; font-weight:700; }
-  .table-header-right { display:flex; gap:8px; align-items:center; }
-  .search-input { padding:6px 12px; border:1px solid #ddd; border-radius:6px; font-size:12px; width:180px; outline:none; }
-  .search-input:focus { border-color:#4a7c59; }
+/* Date input popover */
+.dp{position:absolute;top:100%;left:50%;transform:translateX(-50%);background:var(--surface);border:1px solid var(--border);border-radius:6px;padding:8px;box-shadow:0 4px 12px rgba(0,0,0,.1);z-index:100;display:none}
+.dp.show{display:block}
+.dp input{font-size:13px;padding:4px 6px;border:1px solid var(--border);border-radius:var(--radius);width:120px}
+.dp button{margin-top:4px;font-size:12px}
 
-  table { width:100%; border-collapse:collapse; }
-  thead th { font-size:11px; color:#888; font-weight:600; padding:8px 6px; border-bottom:2px solid #e0e0e0; text-align:center; white-space:nowrap; }
-  tbody td { padding:6px; text-align:center; border-bottom:1px solid #f0f0f0; font-size:13px; }
-  tbody tr:hover { background:#f9faf9; }
-  .cell-title { text-align:left; font-weight:600; min-width:100px; }
-  .cell-author { text-align:left; min-width:60px; }
-  .cell-title input, .cell-author input { border:none; background:transparent; font-size:13px; width:100%; outline:none; padding:2px 4px; }
-  .cell-title input:focus, .cell-author input:focus { background:#f0f7f2; border-radius:4px; }
-  .cell-title input { font-weight:600; }
-
-  .stage-circle { width:18px; height:18px; border:2px solid #ccc; border-radius:50%; display:inline-block; cursor:pointer; vertical-align:middle; }
-  .stage-circle.filled { background:#4a7c59; border-color:#4a7c59; }
-  .stage-date { font-size:10px; color:#888; display:block; margin-top:2px; white-space:nowrap; }
-
-  .delete-btn { color:#ccc; cursor:pointer; font-size:16px; border:none; background:none; }
-  .delete-btn:hover { color:#e74c3c; }
-
-  /* ─── Sync ─── */
-  .sync-status { font-size:11px; color:#888; }
-  .sync-status.syncing { color:#f39c12; }
-  .sync-status.error { color:#e74c3c; }
-  .sync-status.ok { color:#27ae60; }
-
-  /* ─── Settings Modal ─── */
-  .modal-overlay { position:fixed; inset:0; background:rgba(0,0,0,.4); display:flex; align-items:center; justify-content:center; z-index:9998; }
-  .modal { background:#fff; border-radius:12px; padding:32px; width:480px; max-height:80vh; overflow-y:auto; }
-  .modal h3 { margin-bottom:20px; font-size:16px; }
-  .modal label { display:block; font-size:12px; font-weight:600; color:#666; margin-bottom:4px; margin-top:14px; }
-  .modal input[type="text"], .modal input[type="password"] { width:100%; padding:8px 12px; border:1px solid #ddd; border-radius:6px; font-size:13px; }
-  .modal-actions { display:flex; gap:8px; justify-content:flex-end; margin-top:24px; }
-  .user-list { margin-top:12px; }
-  .user-item { display:flex; align-items:center; gap:8px; padding:6px 0; border-bottom:1px solid #f0f0f0; font-size:13px; }
-  .user-item select { padding:4px 8px; border:1px solid #ddd; border-radius:4px; font-size:12px; }
-
-  /* ─── Responsive ─── */
-  @media(max-width:900px) {
-    .pipeline-grid { grid-template-columns:repeat(3,1fr); }
-    .main { padding:0 12px; }
-    table { font-size:12px; }
-  }
-
-  /* Toast */
-  .toast { position:fixed; bottom:24px; right:24px; background:#333; color:#fff; padding:12px 20px; border-radius:8px; font-size:13px; z-index:9999; opacity:0; transition:opacity .3s; }
-  .toast.show { opacity:1; }
+@media(max-width:768px){.hdr,.toolbar,.tbl-wrap{padding-left:12px;padding-right:12px}}
 </style>
 </head>
 <body>
-<div id="root"></div>
 
-<script crossorigin src="https://cdnjs.cloudflare.com/ajax/libs/react/18.2.0/umd/react.production.min.js"></script>
-<script crossorigin src="https://cdnjs.cloudflare.com/ajax/libs/react-dom/18.2.0/umd/react-dom.production.min.js"></script>
-<script crossorigin src="https://cdnjs.cloudflare.com/ajax/libs/babel-standalone/7.23.9/babel.min.js"></script>
-<script type="text/babel">
-const { useState, useEffect, useMemo, useCallback, useRef } = React;
+<div class="login-overlay" id="loginOverlay">
+  <div class="login-card">
+    <h1>기획 진행 현황</h1>
+    <p class="sub">출판 기획 파이프라인 관리</p>
+    <div class="login-tabs">
+      <button class="login-tab active" onclick="swTab('admin')">관리자</button>
+      <button class="login-tab" onclick="swTab('editor')">편집자</button>
+    </div>
+    <div id="aForm">
+      <div class="fg"><label>비밀번호</label><input type="password" id="loginPw" placeholder="관리자 비밀번호" onkeydown="if(event.key==='Enter')doLogin()"></div>
+      <button class="btn btn-p btn-f" onclick="doLogin()">로그인</button>
+    </div>
+    <div id="eForm" style="display:none">
+      <div class="fg"><label>이름</label><select id="edSel"><option value="">선택</option></select></div>
+      <button class="btn btn-p btn-f" onclick="doEdLogin()">로그인</button>
+    </div>
+    <div id="loginMsg" class="msg"></div>
+    <div style="text-align:center;margin-top:18px"><a href="setup.html" style="color:var(--text3);font-size:12px;text-decoration:none">초기 설정</a></div>
+  </div>
+</div>
 
-/* ═══════════════════════════════════════════
-   CONFIG - 사이트 설정
-   Google Apps Script URL을 여기에 입력하세요
-   ═══════════════════════════════════════════ */
-const CONFIG = {
-  APPS_SCRIPT_URL: "",  // ← 여기에 배포된 Apps Script URL 입력
-  SYNC_DEBOUNCE: 2000,
-  SITE_TITLE: "기획 진행 현황",
-};
+<div id="app" style="display:none">
+  <div class="hdr">
+    <h1>기획 진행 현황</h1>
+    <div class="hdr-r">
+      <span class="ubadge" id="uBadge">관리자</span>
+      <button class="btn btn-g btn-s" id="setBtn" onclick="openSP()">설정</button>
+      <button class="btn btn-g btn-s" onclick="logout()">로그아웃</button>
+    </div>
+  </div>
+  <div class="toolbar">
+    <input class="sbox" id="sBox" placeholder="검색" oninput="render()">
+    <button class="btn btn-p btn-s" id="addBtn" onclick="openAdd()">+ 새 기획</button>
+    <button class="btn btn-g btn-s" onclick="exportJSON()">내보내기</button>
+    <button class="btn btn-g btn-s" onclick="document.getElementById('impF').click()">가져오기</button>
+    <input type="file" id="impF" accept=".json" style="display:none" onchange="importJSON(event)">
+  </div>
+  <div class="tbl-wrap">
+    <table>
+      <thead><tr id="thead"></tr></thead>
+      <tbody id="tbody"></tbody>
+    </table>
+  </div>
+</div>
 
-const STAGES = [
-  "아이디어","기획 제안","샘플원고 작성","계약서 초안검토",
-  "계약 완료","집필 시작","초고","탈고","출간 완료"
+<!-- Add/Edit Modal -->
+<div class="modal-bg" id="projModal">
+  <div class="modal">
+    <h2 id="mTitle">새 기획</h2>
+    <input type="hidden" id="mId">
+    <div class="fg"><label>기획(가제)</label><input id="mName"></div>
+    <div class="fg"><label>저자</label><input id="mAuthor"></div>
+    <div id="mStagesArea"></div>
+    <div class="modal-foot">
+      <button class="btn btn-g" onclick="closeModal()">취소</button>
+      <button class="btn btn-p" onclick="saveProj()">저장</button>
+    </div>
+  </div>
+</div>
+
+<!-- Settings -->
+<div class="sp-ov" id="spOv" onclick="closeSP()"></div>
+<div class="sp" id="spPanel">
+  <div class="sp-hdr"><h2>설정</h2><button class="btn btn-g btn-s" onclick="closeSP()">✕</button></div>
+  <div class="sp-body">
+    <div class="sp-sec">
+      <h3>편집자 관리</h3>
+      <div id="edList"></div>
+      <div style="display:flex;gap:4px;margin-top:6px">
+        <input id="newEd" placeholder="이름" style="flex:1;padding:5px 8px;border:1px solid var(--border);border-radius:var(--radius);font-size:13px;outline:none">
+        <button class="btn btn-p btn-s" onclick="addEd()">추가</button>
+      </div>
+    </div>
+    <div class="sp-sec">
+      <h3>비밀번호 변경</h3>
+      <div class="fg"><label>현재</label><input type="password" id="cpw"></div>
+      <div class="fg"><label>새 비밀번호</label><input type="password" id="npw"></div>
+      <div class="fg"><label>확인</label><input type="password" id="npw2"></div>
+      <button class="btn btn-p btn-s" onclick="chPw()">변경</button>
+      <div id="pwMsg" class="msg" style="margin-top:6px"></div>
+    </div>
+    <div class="sp-sec">
+      <h3>Google Sheets 연동</h3>
+      <div class="fg"><label>Apps Script URL</label><input id="gsUrl" placeholder="https://script.google.com/..."></div>
+      <button class="btn btn-p btn-s" onclick="saveGS()">저장</button>
+      <button class="btn btn-g btn-s" style="margin-left:4px" onclick="syncGS()">동기화</button>
+      <div id="gsMsg" class="msg" style="margin-top:6px"></div>
+    </div>
+  </div>
+</div>
+
+<script>
+const STAGES=['아이디어','기획 제안','샘플원고 작성','계약서 초안검토','계약 완료','집필 시작','초고','탈고','출간 완료'];
+const ST_KEYS=['idea','proposal','sample','contract_review','contract_done','writing_start','draft','final','published'];
+
+let S={role:null,edName:null,projects:[],editors:[],gsUrl:''};
+
+// Default data
+const DEFAULT_DATA=[
+{title:'미역의 효능',author:'임은비',stages:{contract_done:'25/4/13',final:'26/2/15'}},
+{title:'한국사 이상현상',author:'최인서',stages:{contract_done:'25/12/17',final:'26/3/1'}},
+{title:'기화',author:'소서림',stages:{contract_done:'25/4/10',final:'26/3/15'}},
+{title:'연화의 묘',author:'고혜원',stages:{contract_done:'25/5/20',final:'26/3/30'}},
+{title:'요즘 세계사 2',author:'임소미',stages:{draft:'25/12/29'}},
+{title:'이경 이야기',author:'박에스더',stages:{contract_done:'25/8/18',draft:'26/3/12'}},
+{title:'조용한 사람',author:'이재은',stages:{draft:'26/4/14'}},
+{title:'요즘 어른 AI',author:'권서림',stages:{proposal:'26/2/25',sample:'26/3/15',contract_review:'26/3/16',draft:'26/4/16'}},
+{title:'여름 일본 광고',author:'이시은',stages:{proposal:'26/2/10',sample:'26/3/30',draft:'26/5/15'}},
+{title:'과학 괴담회',author:'이광렬',stages:{sample:'26/2/2',draft:'26/6/23'}},
+{title:'단백 공복',author:'장일영',stages:{sample:'26/3/12',contract_review:'26/3/15',contract_done:'26/3/15',draft:'26/6/29'}},
+{title:'아이돌 바디호러',author:'설재인',stages:{contract_done:'25/7/16',draft:'26/6/29'}},
+{title:'천년교습소',author:'배명은',stages:{contract_done:'25/4/20',draft:'26/7/29'}},
+{title:'임시 서스펜스',author:'설재인',stages:{contract_done:'25/7/16',draft:'26/12/29'}},
+{title:'사랑 허락 말 것',author:'김달',stages:{contract_done:'24/1/9'}},
+{title:'별별역사 전쟁사',author:'김도형',stages:{contract_done:'26/2/25'}},
+{title:'10대 첫 세계미술관',author:'김영숙',stages:{proposal:'25/12/29',sample:'26/3/31'}},
+{title:'이상한 맞춤법',author:'이주윤',stages:{contract_done:'25/11/30'}},
+{title:'클로드 실용서',author:'권서림',stages:{idea:'26/3/16'}}
 ];
 
-const TODAY = new Date().toISOString().slice(0,10);
+async function sha256(t){const e=new TextEncoder().encode(t);const h=await crypto.subtle.digest('SHA-256',e);return Array.from(new Uint8Array(h)).map(b=>b.toString(16).padStart(2,'0')).join('')}
 
-/* ─── Utility ─── */
-const formatDate = (d) => {
-  if(!d) return "";
-  const [y,m,dd] = d.split("-");
-  return `${y.slice(2)}/${m}/${dd}`;
-};
+function swTab(t){document.querySelectorAll('.login-tab').forEach(b=>b.classList.remove('active'));event.target.classList.add('active');document.getElementById('aForm').style.display=t==='admin'?'block':'none';document.getElementById('eForm').style.display=t==='editor'?'block':'none';document.getElementById('loginMsg').className='msg';if(t==='editor')popEdSel()}
+function popEdSel(){const s=document.getElementById('edSel');s.innerHTML='<option value="">선택</option>';S.editors.forEach(e=>{s.innerHTML+=`<option value="${e}">${e}</option>`})}
 
-async function sha256(msg) {
-  const buf = await crypto.subtle.digest("SHA-256", new TextEncoder().encode(msg));
-  return [...new Uint8Array(buf)].map(b=>b.toString(16).padStart(2,'0')).join('');
+async function doLogin(){const pw=document.getElementById('loginPw').value;const h=localStorage.getItem('admin_pw_hash');if(!h){showLM('error','초기 설정이 필요합니다.');return}const hash=await sha256(pw);if(hash===h){S.role='admin';sessionStorage.setItem('role','admin');showApp()}else showLM('error','비밀번호가 틀렸습니다.')}
+function doEdLogin(){const n=document.getElementById('edSel').value;if(!n){showLM('error','편집자를 선택하세요.');return}S.role='editor';S.edName=n;sessionStorage.setItem('role','editor');sessionStorage.setItem('edName',n);showApp()}
+function logout(){sessionStorage.clear();S.role=null;S.edName=null;document.getElementById('app').style.display='none';document.getElementById('loginOverlay').style.display='flex'}
+function showLM(t,m){const e=document.getElementById('loginMsg');e.className='msg '+t;e.textContent=m}
+
+function showApp(){
+  document.getElementById('loginOverlay').style.display='none';
+  document.getElementById('app').style.display='block';
+  const a=S.role==='admin';
+  document.getElementById('uBadge').textContent=a?'관리자':S.edName;
+  document.getElementById('setBtn').style.display=a?'':'none';
+  document.getElementById('addBtn').style.display=a?'':'none';
+  render();
 }
 
-/* ─── API Helper ─── */
-async function apiFetch(action, token) {
-  if(!CONFIG.APPS_SCRIPT_URL) return null;
-  try {
-    const res = await fetch(`${CONFIG.APPS_SCRIPT_URL}?action=${action}&token=${token}`);
-    return await res.json();
-  } catch(e) { console.error("Fetch error:", e); return null; }
+function load(){
+  try{
+    let p=JSON.parse(localStorage.getItem('projects')||'null');
+    if(!p||!p.length){p=DEFAULT_DATA.map((d,i)=>({id:'p_'+i,...d}));localStorage.setItem('projects',JSON.stringify(p))}
+    S.projects=p;
+    S.editors=JSON.parse(localStorage.getItem('editors')||'[]');
+    S.gsUrl=localStorage.getItem('gsUrl')||'';
+  }catch(e){S.projects=[];S.editors=[]}
+}
+function save(){localStorage.setItem('projects',JSON.stringify(S.projects));localStorage.setItem('editors',JSON.stringify(S.editors))}
+function gid(){return 'p_'+Date.now()+'_'+Math.random().toString(36).slice(2,6)}
+
+function render(){
+  const q=document.getElementById('sBox').value.toLowerCase();
+  const th=document.getElementById('thead');
+  th.innerHTML='<th>기획(가제)</th><th>저자</th>'+STAGES.map(s=>`<th>${s}</th>`).join('')+(S.role==='admin'?'<th></th>':'');
+  const tb=document.getElementById('tbody');
+  let rows=S.projects;
+  if(q)rows=rows.filter(p=>p.title.toLowerCase().includes(q)||p.author.toLowerCase().includes(q));
+  tb.innerHTML=rows.map(p=>{
+    const stg=p.stages||{};
+    return `<tr>
+      <td class="title-cell" onclick="openEdit('${p.id}')">${esc(p.title)}</td>
+      <td class="author-cell">${esc(p.author)}</td>
+      ${ST_KEYS.map(k=>{
+        const v=stg[k];
+        return `<td class="date-cell" onclick="cellClick(event,'${p.id}','${k}')">${v?`<span class="dt">${esc(v)}</span>`:'<span class="dot"></span>'}</td>`;
+      }).join('')}
+      ${S.role==='admin'?`<td class="act-cell"><button onclick="delProj('${p.id}')" title="삭제">✕</button></td>`:''}
+    </tr>`;
+  }).join('');
 }
 
-async function apiPost(body, token) {
-  if(!CONFIG.APPS_SCRIPT_URL) return null;
-  try {
-    const res = await fetch(CONFIG.APPS_SCRIPT_URL, {
-      method: "POST",
-      headers: {"Content-Type":"text/plain"},
-      body: JSON.stringify({...body, token})
-    });
-    return await res.json();
-  } catch(e) { console.error("Post error:", e); return null; }
+// Inline date editing
+let activePop=null;
+function cellClick(ev,pid,key){
+  ev.stopPropagation();
+  if(activePop){activePop.remove();activePop=null}
+  if(S.role!=='admin')return;
+  const td=ev.currentTarget;
+  const p=S.projects.find(x=>x.id===pid);
+  if(!p)return;
+  if(!p.stages)p.stages={};
+  const cur=p.stages[key]||'';
+  const pop=document.createElement('div');
+  pop.className='dp show';
+  pop.innerHTML=`<input type="text" value="${cur}" placeholder="YY/M/D" style="font-size:13px;padding:4px 6px;border:1px solid var(--border);border-radius:var(--radius);width:100px">
+    <div style="display:flex;gap:4px;margin-top:4px">
+      <button class="btn btn-p btn-s" onclick="saveDatePop(this,'${pid}','${key}')">확인</button>
+      ${cur?`<button class="btn btn-g btn-s" onclick="clearDatePop(this,'${pid}','${key}')">삭제</button>`:''}
+    </div>`;
+  td.style.position='relative';
+  td.appendChild(pop);
+  pop.querySelector('input').focus();
+  pop.querySelector('input').addEventListener('keydown',e=>{if(e.key==='Enter')saveDatePop(pop.querySelector('button'),pid,key);if(e.key==='Escape'){pop.remove();activePop=null}});
+  activePop=pop;
+}
+document.addEventListener('click',()=>{if(activePop){activePop.remove();activePop=null}});
+
+function saveDatePop(btn,pid,key){
+  const pop=btn.closest('.dp');
+  const val=pop.querySelector('input').value.trim();
+  const p=S.projects.find(x=>x.id===pid);
+  if(p){if(!p.stages)p.stages={};if(val)p.stages[key]=val;else delete p.stages[key];save();render()}
+  pop.remove();activePop=null;
+}
+function clearDatePop(btn,pid,key){
+  const pop=btn.closest('.dp');
+  const p=S.projects.find(x=>x.id===pid);
+  if(p&&p.stages){delete p.stages[key];save();render()}
+  pop.remove();activePop=null;
 }
 
-/* ═══════════════════════════════════════════
-   MAIN APP
-   ═══════════════════════════════════════════ */
-function App() {
-  /* ─── Auth State ─── */
-  const [authed, setAuthed] = useState(false);
-  const [currentUser, setCurrentUser] = useState(null); // {name, role}
-  const [loginPw, setLoginPw] = useState("");
-  const [loginName, setLoginName] = useState("");
-  const [loginError, setLoginError] = useState("");
+function openAdd(){
+  document.getElementById('mTitle').textContent='새 기획';
+  document.getElementById('mId').value='';
+  document.getElementById('mName').value='';
+  document.getElementById('mAuthor').value='';
+  renderModalStages({});
+  document.getElementById('projModal').classList.add('show');
+}
+function openEdit(id){
+  const p=S.projects.find(x=>x.id===id);if(!p)return;
+  document.getElementById('mTitle').textContent='기획 수정';
+  document.getElementById('mId').value=id;
+  document.getElementById('mName').value=p.title;
+  document.getElementById('mAuthor').value=p.author;
+  renderModalStages(p.stages||{});
+  document.getElementById('projModal').classList.add('show');
+}
+function renderModalStages(stg){
+  const area=document.getElementById('mStagesArea');
+  area.innerHTML=STAGES.map((s,i)=>`<div class="fg"><label>${s}</label><input id="ms_${ST_KEYS[i]}" value="${stg[ST_KEYS[i]]||''}" placeholder="YY/M/D"></div>`).join('');
+}
+function closeModal(){document.getElementById('projModal').classList.remove('show')}
+function saveProj(){
+  const id=document.getElementById('mId').value;
+  const title=document.getElementById('mName').value.trim();
+  const author=document.getElementById('mAuthor').value.trim();
+  if(!title){alert('제목을 입력하세요.');return}
+  if(!author){alert('저자를 입력하세요.');return}
+  const stages={};
+  ST_KEYS.forEach(k=>{const v=document.getElementById('ms_'+k).value.trim();if(v)stages[k]=v});
+  if(id){const p=S.projects.find(x=>x.id===id);if(p){p.title=title;p.author=author;p.stages=stages}}
+  else S.projects.push({id:gid(),title,author,stages});
+  save();closeModal();render();
+}
+function delProj(id){if(!confirm('삭제하시겠습니까?'))return;S.projects=S.projects.filter(p=>p.id!==id);save();render()}
 
-  /* ─── Data State ─── */
-  const [projects, setProjects] = useState([]);
-  const [users, setUsers] = useState([]);
-  const [settings, setSettings] = useState({ adminPwHash:"", editorPwHash:"" });
-  const [search, setSearch] = useState("");
-  const [syncStatus, setSyncStatus] = useState("idle"); // idle|syncing|ok|error
-  const [showSettings, setShowSettings] = useState(false);
-  const [toast, setToast] = useState("");
+// Settings
+function openSP(){document.getElementById('spPanel').classList.add('open');document.getElementById('spOv').classList.add('show');renderEdList();document.getElementById('gsUrl').value=S.gsUrl}
+function closeSP(){document.getElementById('spPanel').classList.remove('open');document.getElementById('spOv').classList.remove('show')}
+function renderEdList(){const el=document.getElementById('edList');if(!S.editors.length){el.innerHTML='<div style="color:var(--text3);font-size:12px;padding:4px">없음</div>';return}el.innerHTML=S.editors.map(e=>`<div class="ed-item"><span>${esc(e)}</span><button onclick="rmEd('${esc(e)}')">✕</button></div>`).join('')}
+function addEd(){const n=document.getElementById('newEd').value.trim();if(!n)return;if(S.editors.includes(n)){alert('이미 등록됨');return}S.editors.push(n);save();document.getElementById('newEd').value='';renderEdList()}
+function rmEd(n){if(!confirm(`'${n}' 삭제?`))return;S.editors=S.editors.filter(e=>e!==n);save();renderEdList()}
 
-  const syncTimer = useRef(null);
-  const dataLoaded = useRef(false);
-
-  /* ─── Toast ─── */
-  const showToast = (msg) => {
-    setToast(msg);
-    setTimeout(() => setToast(""), 2500);
-  };
-
-  /* ─── Auth ─── */
-  const handleLogin = async () => {
-    if(!loginName.trim()) { setLoginError("이름을 입력하세요"); return; }
-    if(!loginPw) { setLoginError("비밀번호를 입력하세요"); return; }
-
-    const hash = await sha256(loginPw);
-
-    // 먼저 시트에서 설정 가져오기
-    if(CONFIG.APPS_SCRIPT_URL) {
-      const res = await apiFetch("readSettings", "");
-      if(res && res.success) {
-        const s = res.data;
-        if(hash === s.adminPwHash) {
-          setCurrentUser({ name: loginName, role: "admin" });
-          setSettings(s);
-          setAuthed(true);
-          sessionStorage.setItem("pipeline_auth", JSON.stringify({ name:loginName, role:"admin", hash }));
-          loadData("admin", hash);
-          return;
-        }
-        if(hash === s.editorPwHash) {
-          // 편집자 이름이 등록되어 있는지 확인
-          const userList = res.data.users || [];
-          const found = userList.find(u => u.name === loginName.trim());
-          if(found) {
-            setCurrentUser({ name: loginName, role: "editor" });
-            setSettings(s);
-            setUsers(userList);
-            setAuthed(true);
-            sessionStorage.setItem("pipeline_auth", JSON.stringify({ name:loginName, role:"editor", hash }));
-            loadData("editor", hash);
-            return;
-          } else {
-            setLoginError("등록되지 않은 편집자입니다. 관리자에게 문의하세요.");
-            return;
-          }
-        }
-        setLoginError("비밀번호가 일치하지 않습니다");
-        return;
-      }
-    }
-
-    // Apps Script 미설정 시: 로컬 모드
-    setCurrentUser({ name: loginName, role: "admin" });
-    setAuthed(true);
-    showToast("로컬 모드로 실행 중 (Google Sheets 미연결)");
-    const saved = localStorage.getItem("pipeline_projects");
-    if(saved) setProjects(JSON.parse(saved));
-    dataLoaded.current = true;
-  };
-
-  // 세션 복원
-  useEffect(() => {
-    const saved = sessionStorage.getItem("pipeline_auth");
-    if(saved) {
-      try {
-        const { name, role, hash } = JSON.parse(saved);
-        setCurrentUser({ name, role });
-        setAuthed(true);
-        loadData(role, hash);
-      } catch(e) {}
-    }
-  }, []);
-
-  const loadData = async (role, hash) => {
-    if(!CONFIG.APPS_SCRIPT_URL) {
-      const saved = localStorage.getItem("pipeline_projects");
-      if(saved) setProjects(JSON.parse(saved));
-      dataLoaded.current = true;
-      return;
-    }
-    setSyncStatus("syncing");
-    const res = await apiFetch("readAll", hash);
-    if(res && res.success) {
-      setProjects(res.data.projects || []);
-      setUsers(res.data.users || []);
-      setSettings(res.data.settings || {});
-      setSyncStatus("ok");
-      dataLoaded.current = true;
-    } else {
-      setSyncStatus("error");
-      showToast("데이터 로드 실패");
-    }
-  };
-
-  const handleLogout = () => {
-    setAuthed(false);
-    setCurrentUser(null);
-    setProjects([]);
-    sessionStorage.removeItem("pipeline_auth");
-  };
-
-  /* ─── Sync to Sheets (debounced) ─── */
-  const syncToSheets = useCallback(async (data) => {
-    if(!CONFIG.APPS_SCRIPT_URL || !dataLoaded.current) return;
-    setSyncStatus("syncing");
-    const auth = sessionStorage.getItem("pipeline_auth");
-    const token = auth ? JSON.parse(auth).hash : "";
-    const res = await apiPost({ action:"writeProjects", data }, token);
-    if(res && res.success) {
-      setSyncStatus("ok");
-    } else {
-      setSyncStatus("error");
-    }
-  }, []);
-
-  useEffect(() => {
-    if(!dataLoaded.current) return;
-    // 로컬 백업
-    localStorage.setItem("pipeline_projects", JSON.stringify(projects));
-    // 시트 동기화 (디바운스)
-    if(syncTimer.current) clearTimeout(syncTimer.current);
-    syncTimer.current = setTimeout(() => syncToSheets(projects), CONFIG.SYNC_DEBOUNCE);
-  }, [projects, syncToSheets]);
-
-  /* ─── Pipeline Counts ─── */
-  const pipelineCounts = useMemo(() => {
-    const c = Object.fromEntries(STAGES.map(s => [s, 0]));
-    projects.forEach(p => {
-      const ls = [...STAGES].reverse().find(s => p.stages[s]);
-      if(ls) c[ls] += 1;
-    });
-    return c;
-  }, [projects]);
-
-  /* ─── Filtered Projects ─── */
-  const filtered = useMemo(() => {
-    if(!search.trim()) return projects;
-    const q = search.toLowerCase();
-    return projects.filter(p =>
-      p.title.toLowerCase().includes(q) || p.author.toLowerCase().includes(q)
-    );
-  }, [projects, search]);
-
-  /* ─── Project CRUD ─── */
-  const addProject = () => {
-    if(currentUser?.role === "editor") {
-      showToast("기획 추가는 관리자만 가능합니다");
-      return;
-    }
-    const nid = projects.length ? Math.max(...projects.map(p=>p.id))+1 : 1;
-    setProjects(prev => [...prev, {
-      id: nid,
-      title: "새 기획",
-      author: "",
-      stages: Object.fromEntries(STAGES.map(s => [s, ""]))
-    }]);
-  };
-
-  const deleteProject = (pid) => {
-    if(currentUser?.role === "editor") {
-      showToast("기획 삭제는 관리자만 가능합니다");
-      return;
-    }
-    if(!confirm("이 기획을 삭제하시겠습니까?")) return;
-    setProjects(prev => prev.filter(p => p.id !== pid));
-  };
-
-  const updateField = (pid, field, value) => {
-    setProjects(prev => prev.map(p =>
-      p.id !== pid ? p : { ...p, [field]: value }
-    ));
-  };
-
-  const toggleStage = (pid, stage) => {
-    // 편집자는 자기 담당만 수정 가능
-    if(currentUser?.role === "editor") {
-      const proj = projects.find(p => p.id === pid);
-      if(proj && proj.author !== currentUser.name) {
-        showToast("본인 담당 기획만 수정할 수 있습니다");
-        return;
-      }
-    }
-    setProjects(prev => prev.map(p =>
-      p.id !== pid ? p : {
-        ...p,
-        stages: { ...p.stages, [stage]: p.stages[stage] ? "" : TODAY }
-      }
-    ));
-  };
-
-  /* ─── Settings ─── */
-  const [newAdminPw, setNewAdminPw] = useState("");
-  const [newEditorPw, setNewEditorPw] = useState("");
-  const [newUserName, setNewUserName] = useState("");
-
-  const saveSettings = async () => {
-    const s = { ...settings };
-    if(newAdminPw) s.adminPwHash = await sha256(newAdminPw);
-    if(newEditorPw) s.editorPwHash = await sha256(newEditorPw);
-
-    if(CONFIG.APPS_SCRIPT_URL) {
-      const auth = sessionStorage.getItem("pipeline_auth");
-      const token = auth ? JSON.parse(auth).hash : "";
-      await apiPost({ action:"writeSettings", data: { settings: s, users } }, token);
-    }
-    setSettings(s);
-    setNewAdminPw("");
-    setNewEditorPw("");
-    showToast("설정이 저장되었습니다");
-  };
-
-  const addUser = () => {
-    if(!newUserName.trim()) return;
-    if(users.find(u => u.name === newUserName.trim())) {
-      showToast("이미 등록된 이름입니다");
-      return;
-    }
-    setUsers(prev => [...prev, { name: newUserName.trim(), role: "editor" }]);
-    setNewUserName("");
-  };
-
-  const removeUser = (name) => {
-    setUsers(prev => prev.filter(u => u.name !== name));
-  };
-
-  /* ─── Render ─── */
-  if(!authed) {
-    return (
-      <div className="login-overlay">
-        <div className="login-box">
-          <h2>기획 진행 현황</h2>
-          <p>편집부 전용 시스템입니다</p>
-          {loginError && <div className="login-error">{loginError}</div>}
-          <input
-            placeholder="이름"
-            value={loginName}
-            onChange={e => setLoginName(e.target.value)}
-            onKeyDown={e => e.key === 'Enter' && handleLogin()}
-          />
-          <input
-            type="password"
-            placeholder="비밀번호"
-            value={loginPw}
-            onChange={e => setLoginPw(e.target.value)}
-            onKeyDown={e => e.key === 'Enter' && handleLogin()}
-          />
-          <button onClick={handleLogin}>로그인</button>
-          {!CONFIG.APPS_SCRIPT_URL && (
-            <p style={{marginTop:12,fontSize:11,color:'#f39c12'}}>
-              ⚠ Google Sheets 미연결 (로컬 모드)
-            </p>
-          )}
-        </div>
-      </div>
-    );
-  }
-
-  return (
-    <div>
-      {/* Header */}
-      <div className="header">
-        <h1>{CONFIG.SITE_TITLE}</h1>
-        <div className="header-right">
-          <span className={`sync-status ${syncStatus}`}>
-            {syncStatus === 'syncing' ? '동기화 중...' :
-             syncStatus === 'ok' ? '✓ 동기화 완료' :
-             syncStatus === 'error' ? '✕ 동기화 오류' : ''}
-          </span>
-          <span className={`role-badge ${currentUser?.role}`}>
-            {currentUser?.name} ({currentUser?.role === 'admin' ? '관리자' : '편집자'})
-          </span>
-          {currentUser?.role === 'admin' && (
-            <button className="btn-sm" onClick={() => setShowSettings(true)}>설정</button>
-          )}
-          <button className="btn-sm" onClick={handleLogout}>로그아웃</button>
-        </div>
-      </div>
-
-      <div className="main">
-        {/* Pipeline */}
-        <div className="pipeline">
-          <h3>기획 파이프라인</h3>
-          <div className="pipeline-grid">
-            {STAGES.map(s => (
-              <div className="pipe-item" key={s}>
-                <div className="count">{pipelineCounts[s]}</div>
-                <div className="label">{s}</div>
-              </div>
-            ))}
-          </div>
-        </div>
-
-        {/* Table */}
-        <div className="table-section">
-          <div className="table-header">
-            <h3>기획 진행 현황</h3>
-            <div className="table-header-right">
-              <input
-                className="search-input"
-                placeholder="검색"
-                value={search}
-                onChange={e => setSearch(e.target.value)}
-              />
-              {currentUser?.role === 'admin' && (
-                <button className="btn-sm btn-primary" onClick={addProject}>+ 새 기획</button>
-              )}
-            </div>
-          </div>
-
-          <div style={{overflowX:'auto'}}>
-            <table>
-              <thead>
-                <tr>
-                  <th>기획(가제)</th>
-                  <th>저자</th>
-                  {STAGES.map(s => <th key={s}>{s}</th>)}
-                  {currentUser?.role === 'admin' && <th></th>}
-                </tr>
-              </thead>
-              <tbody>
-                {filtered.map(p => (
-                  <tr key={p.id}>
-                    <td className="cell-title">
-                      <input
-                        value={p.title}
-                        onChange={e => updateField(p.id, 'title', e.target.value)}
-                        readOnly={currentUser?.role === 'editor' && p.author !== currentUser.name}
-                      />
-                    </td>
-                    <td className="cell-author">
-                      <input
-                        value={p.author}
-                        onChange={e => updateField(p.id, 'author', e.target.value)}
-                        readOnly={currentUser?.role !== 'admin'}
-                      />
-                    </td>
-                    {STAGES.map(s => (
-                      <td key={s}>
-                        <span
-                          className={`stage-circle ${p.stages[s] ? 'filled' : ''}`}
-                          onClick={() => toggleStage(p.id, s)}
-                        />
-                        {p.stages[s] && <span className="stage-date">{formatDate(p.stages[s])}</span>}
-                      </td>
-                    ))}
-                    {currentUser?.role === 'admin' && (
-                      <td>
-                        <button className="delete-btn" onClick={() => deleteProject(p.id)}>✕</button>
-                      </td>
-                    )}
-                  </tr>
-                ))}
-                {filtered.length === 0 && (
-                  <tr><td colSpan={STAGES.length+3} style={{padding:32,color:'#aaa',textAlign:'center'}}>
-                    {search ? '검색 결과가 없습니다' : '기획이 없습니다. 새 기획을 추가하세요.'}
-                  </td></tr>
-                )}
-              </tbody>
-            </table>
-          </div>
-        </div>
-      </div>
-
-      {/* Settings Modal (admin only) */}
-      {showSettings && currentUser?.role === 'admin' && (
-        <div className="modal-overlay" onClick={e => { if(e.target === e.currentTarget) setShowSettings(false); }}>
-          <div className="modal">
-            <h3>시스템 설정</h3>
-
-            <label>관리자 비밀번호 변경</label>
-            <input type="password" placeholder="새 관리자 비밀번호" value={newAdminPw}
-              onChange={e => setNewAdminPw(e.target.value)} />
-
-            <label>편집자 비밀번호 변경</label>
-            <input type="password" placeholder="새 편집자 비밀번호" value={newEditorPw}
-              onChange={e => setNewEditorPw(e.target.value)} />
-
-            <label style={{marginTop:20}}>편집자 목록</label>
-            <div style={{display:'flex',gap:8,marginTop:8}}>
-              <input type="text" placeholder="편집자 이름 추가" value={newUserName}
-                onChange={e => setNewUserName(e.target.value)}
-                onKeyDown={e => e.key === 'Enter' && addUser()}
-                style={{flex:1}} />
-              <button className="btn-sm btn-primary" onClick={addUser}>추가</button>
-            </div>
-            <div className="user-list">
-              {users.map(u => (
-                <div className="user-item" key={u.name}>
-                  <span style={{flex:1}}>{u.name}</span>
-                  <span style={{color:'#888',fontSize:11}}>편집자</span>
-                  <button className="btn-sm btn-danger" onClick={() => removeUser(u.name)}>삭제</button>
-                </div>
-              ))}
-              {users.length === 0 && <p style={{color:'#aaa',fontSize:12,padding:8}}>등록된 편집자가 없습니다</p>}
-            </div>
-
-            <div className="modal-actions">
-              <button className="btn-sm" onClick={() => setShowSettings(false)}>닫기</button>
-              <button className="btn-sm btn-primary" onClick={saveSettings}>저장</button>
-            </div>
-          </div>
-        </div>
-      )}
-
-      {/* Toast */}
-      <div className={`toast ${toast ? 'show' : ''}`}>{toast}</div>
-    </div>
-  );
+async function chPw(){
+  const c=document.getElementById('cpw').value,n=document.getElementById('npw').value,n2=document.getElementById('npw2').value,m=document.getElementById('pwMsg');
+  if(await sha256(c)!==localStorage.getItem('admin_pw_hash')){m.className='msg error';m.textContent='현재 비밀번호 오류';return}
+  if(n.length<4){m.className='msg error';m.textContent='4자 이상';return}
+  if(n!==n2){m.className='msg error';m.textContent='불일치';return}
+  localStorage.setItem('admin_pw_hash',await sha256(n));m.className='msg success';m.textContent='변경됨';
+  ['cpw','npw','npw2'].forEach(i=>document.getElementById(i).value='');
 }
 
-ReactDOM.createRoot(document.getElementById('root')).render(<App />);
+function saveGS(){S.gsUrl=document.getElementById('gsUrl').value.trim();localStorage.setItem('gsUrl',S.gsUrl);const m=document.getElementById('gsMsg');m.className='msg success';m.textContent='저장됨'}
+async function syncGS(){if(!S.gsUrl){document.getElementById('gsMsg').className='msg error';document.getElementById('gsMsg').textContent='URL 필요';return}try{await fetch(S.gsUrl,{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({action:'syncAll',projects:S.projects,editors:S.editors}),mode:'no-cors'});document.getElementById('gsMsg').className='msg success';document.getElementById('gsMsg').textContent='완료'}catch(e){document.getElementById('gsMsg').className='msg error';document.getElementById('gsMsg').textContent='실패'}}
+
+function exportJSON(){const b=new Blob([JSON.stringify({projects:S.projects,editors:S.editors},null,2)],{type:'application/json'});const a=document.createElement('a');a.href=URL.createObjectURL(b);a.download='기획현황.json';a.click()}
+function importJSON(e){const f=e.target.files[0];if(!f)return;const r=new FileReader();r.onload=ev=>{try{const d=JSON.parse(ev.target.result);if(d.projects)S.projects=d.projects;if(d.editors)S.editors=d.editors;save();render();alert('완료')}catch(err){alert('오류')}};r.readAsText(f);e.target.value=''}
+
+function esc(s){const d=document.createElement('div');d.textContent=s;return d.innerHTML}
+
+function init(){
+  load();
+  const r=sessionStorage.getItem('role');
+  if(r==='admin'&&localStorage.getItem('admin_pw_hash')){S.role='admin';showApp()}
+  else if(r==='editor'){S.edName=sessionStorage.getItem('edName');if(S.edName&&S.editors.includes(S.edName)){S.role='editor';showApp()}}
+  popEdSel();
+}
+init();
 </script>
 </body>
 </html>
