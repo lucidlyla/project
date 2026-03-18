@@ -3,163 +3,92 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>초기 설정 - 전사 기획 현황</title>
+<title>초기 설정 - 기획 진행 현황</title>
 <style>
-  * { margin: 0; padding: 0; box-sizing: border-box; }
-  body {
-    font-family: 'Pretendard', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
-    background: linear-gradient(135deg, #0f172a 0%, #1e293b 100%);
-    min-height: 100vh;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    color: #e2e8f0;
-  }
-  .setup-card {
-    background: #1e293b;
-    border: 1px solid #334155;
-    border-radius: 16px;
-    padding: 48px;
-    width: 100%;
-    max-width: 440px;
-    box-shadow: 0 25px 50px rgba(0,0,0,0.4);
-  }
-  .setup-card h1 {
-    font-size: 24px;
-    font-weight: 700;
-    margin-bottom: 8px;
-    color: #f8fafc;
-  }
-  .setup-card p {
-    font-size: 14px;
-    color: #94a3b8;
-    margin-bottom: 32px;
-    line-height: 1.6;
-  }
-  .form-group { margin-bottom: 20px; }
-  .form-group label {
-    display: block;
-    font-size: 13px;
-    font-weight: 600;
-    color: #94a3b8;
-    margin-bottom: 8px;
-    text-transform: uppercase;
-    letter-spacing: 0.5px;
-  }
-  .form-group input {
-    width: 100%;
-    padding: 12px 16px;
-    background: #0f172a;
-    border: 1px solid #334155;
-    border-radius: 8px;
-    color: #f8fafc;
-    font-size: 15px;
-    outline: none;
-    transition: border-color 0.2s;
-  }
-  .form-group input:focus { border-color: #3b82f6; }
-  .btn-primary {
-    width: 100%;
-    padding: 14px;
-    background: #3b82f6;
-    color: white;
-    border: none;
-    border-radius: 8px;
-    font-size: 15px;
-    font-weight: 600;
-    cursor: pointer;
-    transition: background 0.2s;
-    margin-top: 8px;
-  }
-  .btn-primary:hover { background: #2563eb; }
-  .warning {
-    background: #7c2d12;
-    border: 1px solid #9a3412;
-    border-radius: 8px;
-    padding: 12px 16px;
-    font-size: 13px;
-    color: #fed7aa;
-    margin-bottom: 24px;
-    line-height: 1.5;
-  }
-  .already-set {
-    text-align: center;
-    padding: 24px;
-  }
-  .already-set a {
-    color: #3b82f6;
-    text-decoration: none;
-  }
-  .msg { margin-top: 16px; padding: 12px; border-radius: 8px; font-size: 14px; display: none; }
-  .msg.success { display: block; background: #064e3b; border: 1px solid #065f46; color: #6ee7b7; }
-  .msg.error { display: block; background: #7c2d12; border: 1px solid #9a3412; color: #fed7aa; }
+  * { margin:0; padding:0; box-sizing:border-box; }
+  body { font-family: 'Apple SD Gothic Neo','Malgun Gothic',sans-serif; background:#f5f5f5; display:flex; align-items:center; justify-content:center; min-height:100vh; }
+  .setup-box { background:#fff; border-radius:12px; padding:40px 36px; width:420px; box-shadow:0 8px 32px rgba(0,0,0,.1); }
+  h2 { margin-bottom:8px; font-size:20px; }
+  p { color:#888; font-size:13px; margin-bottom:24px; line-height:1.5; }
+  label { display:block; font-size:12px; font-weight:600; color:#666; margin-bottom:4px; margin-top:16px; }
+  input { width:100%; padding:10px 14px; border:1px solid #ddd; border-radius:8px; font-size:14px; outline:none; }
+  input:focus { border-color:#4a7c59; }
+  button { width:100%; padding:12px; background:#4a7c59; color:#fff; border:none; border-radius:8px; font-size:15px; cursor:pointer; font-weight:600; margin-top:24px; }
+  button:hover { background:#3d6b4b; }
+  .msg { margin-top:12px; padding:10px; border-radius:6px; font-size:13px; }
+  .msg.ok { background:#e8f5e9; color:#2e7d32; }
+  .msg.err { background:#fdecea; color:#e74c3c; }
+  .note { margin-top:16px; font-size:11px; color:#aaa; line-height:1.5; }
 </style>
 </head>
 <body>
-<div class="setup-card" id="setupForm">
-  <h1>초기 비밀번호 설정</h1>
-  <p>전사 기획 현황 관리 시스템의 관리자 비밀번호를 설정합니다. 이 페이지는 최초 1회만 사용 가능합니다.</p>
-  <div class="warning">이 비밀번호는 관리자 권한으로 사용됩니다. 안전한 비밀번호를 설정해 주세요.</div>
-  <div class="form-group">
-    <label>관리자 비밀번호</label>
-    <input type="password" id="pw1" placeholder="비밀번호 입력">
-  </div>
-  <div class="form-group">
-    <label>비밀번호 확인</label>
-    <input type="password" id="pw2" placeholder="비밀번호 재입력">
-  </div>
-  <button class="btn-primary" onclick="setupPassword()">설정 완료</button>
-  <div id="msg" class="msg"></div>
-</div>
+<div class="setup-box">
+  <h2>초기 비밀번호 설정</h2>
+  <p>최초 1회만 실행합니다. 관리자 비밀번호와 편집자 비밀번호를 설정하세요.</p>
 
-<div class="setup-card already-set" id="alreadySet" style="display:none;">
-  <h1>설정 완료됨</h1>
-  <p>관리자 비밀번호가 이미 설정되어 있습니다.</p>
-  <a href="index.html">메인 페이지로 이동 →</a>
+  <label>Apps Script URL</label>
+  <input id="url" type="text" placeholder="https://script.google.com/macros/s/.../exec" />
+
+  <label>관리자 비밀번호</label>
+  <input id="adminPw" type="password" placeholder="관리자용 비밀번호" />
+
+  <label>편집자 비밀번호</label>
+  <input id="editorPw" type="password" placeholder="편집자 공용 비밀번호" />
+
+  <button onclick="initSetup()">설정 완료</button>
+  <div id="msg"></div>
+
+  <div class="note">
+    ※ 비밀번호는 SHA-256 해시로 변환되어 저장됩니다.<br/>
+    ※ 설정 후 이 페이지는 더 이상 사용하지 않아도 됩니다.<br/>
+    ※ 비밀번호 변경은 관리자 로그인 후 설정에서 가능합니다.
+  </div>
 </div>
 
 <script>
-async function sha256(text) {
-  const encoder = new TextEncoder();
-  const data = encoder.encode(text);
-  const hash = await crypto.subtle.digest('SHA-256', data);
-  return Array.from(new Uint8Array(hash)).map(b => b.toString(16).padStart(2, '0')).join('');
+async function sha256(msg) {
+  const buf = await crypto.subtle.digest("SHA-256", new TextEncoder().encode(msg));
+  return [...new Uint8Array(buf)].map(b=>b.toString(16).padStart(2,'0')).join('');
 }
 
-function init() {
-  const existing = localStorage.getItem('admin_pw_hash');
-  if (existing) {
-    document.getElementById('setupForm').style.display = 'none';
-    document.getElementById('alreadySet').style.display = 'block';
-  }
-}
-
-async function setupPassword() {
-  const pw1 = document.getElementById('pw1').value;
-  const pw2 = document.getElementById('pw2').value;
+async function initSetup() {
+  const url = document.getElementById('url').value.trim();
+  const adminPw = document.getElementById('adminPw').value;
+  const editorPw = document.getElementById('editorPw').value;
   const msgEl = document.getElementById('msg');
 
-  if (!pw1 || pw1.length < 4) {
-    msgEl.className = 'msg error';
-    msgEl.textContent = '비밀번호는 4자 이상이어야 합니다.';
-    return;
-  }
-  if (pw1 !== pw2) {
-    msgEl.className = 'msg error';
-    msgEl.textContent = '비밀번호가 일치하지 않습니다.';
-    return;
-  }
+  if(!url) { msgEl.className='msg err'; msgEl.textContent='Apps Script URL을 입력하세요'; return; }
+  if(!adminPw) { msgEl.className='msg err'; msgEl.textContent='관리자 비밀번호를 입력하세요'; return; }
+  if(!editorPw) { msgEl.className='msg err'; msgEl.textContent='편집자 비밀번호를 입력하세요'; return; }
+  if(adminPw === editorPw) { msgEl.className='msg err'; msgEl.textContent='관리자와 편집자 비밀번호는 달라야 합니다'; return; }
 
-  const hash = await sha256(pw1);
-  localStorage.setItem('admin_pw_hash', hash);
-  localStorage.setItem('setup_done', 'true');
+  msgEl.className='msg'; msgEl.textContent='설정 중...';
 
-  msgEl.className = 'msg success';
-  msgEl.textContent = '설정 완료! 메인 페이지로 이동합니다...';
-  setTimeout(() => { window.location.href = 'index.html'; }, 1500);
+  try {
+    const res = await fetch(url, {
+      method: "POST",
+      headers: {"Content-Type":"text/plain"},
+      body: JSON.stringify({
+        action: "initPasswords",
+        data: {
+          adminPwHash: await sha256(adminPw),
+          editorPwHash: await sha256(editorPw)
+        }
+      })
+    });
+    const json = await res.json();
+    if(json.success) {
+      msgEl.className='msg ok';
+      msgEl.textContent='설정 완료! 이제 메인 페이지에서 로그인하세요.';
+    } else {
+      msgEl.className='msg err';
+      msgEl.textContent='오류: ' + (json.error || '알 수 없는 오류');
+    }
+  } catch(e) {
+    msgEl.className='msg err';
+    msgEl.textContent='연결 오류: ' + e.message;
+  }
 }
-
-init();
 </script>
 </body>
 </html>
